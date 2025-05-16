@@ -67,7 +67,7 @@ app.get("/reg",function (req, res) {
 
 //Home page
 app.get("/home",function (req, res) {
-    res.sendFile(__dirname+"/home.html");
+    res.sendFile(__dirname+"/index.html");
 });
 
 //Booking Train ticket 
