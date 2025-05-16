@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+        <script src="URL/Jquery/jquery.txt"></script>        
+        <link rel="stylesheet" href="URL/css/bootstrap-grid.min.css">
+        <script src="URL/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="project.css">
+        <script>
+            $(function () {
+                var xml1 = new XMLHttpRequest();
+                xml1.open("GET", "n.txt", true);
+                xml1.send();
+                xml1.onreadystatechange = function () {
+                    if (xml1.readyState === 4 && xml1.status === 200) {
+                        var b = JSON.parse(xml1.responseText);
+                        $("#built").load(b == 1 ? "header2.html" : "header1.html");
+                    }
+                };
+                var da = document.getElementById("date");
+                var now = new Date();
+                var today = `${now.getFullYear()}-${zero(now.getMonth() + 1)}-${zero(now.getDate())}`;
+                da.min = today;
+                da.value = today;
+        
+                var a, ss, dd;
+                var xml2 = new XMLHttpRequest();
+                xml2.open("GET", "price.json", true);
+                xml2.send();
+                xml2.onreadystatechange = function () {
+                    if (xml2.readyState === 4 && xml2.status === 200) {
+                        a = JSON.parse(xml2.responseText);
+                        ss = document.getElementById("sstation");
+                        dd = document.getElementById("dstation");
+                        var placeholder = document.createElement("option");
+                        placeholder.textContent = "Select source";
+                        placeholder.disabled = true;
+                        placeholder.selected = true;
+                        ss.appendChild(placeholder);
+                        for (var source in a) {
+                            var op = document.createElement("option");
+                            op.value = source;
+                            op.textContent = source;
+                            ss.appendChild(op);
+                        }
+                        ss.addEventListener("change", function () {
+                            dest();
+                        });
+                    }
+                };
+        
+                function dest() {
+                    dd = document.getElementById("dstation");
+                    dd.innerHTML = "";
+                    var placeholder = document.createElement("option");
+                    placeholder.textContent = "Select destination";
+                    placeholder.disabled = true;
+                    placeholder.selected = true;
+                    dd.appendChild(placeholder);
+                    for (var des in a[ss.value]) {
+                        var opt = document.createElement("option");
+                        opt.value = des;
+                        opt.textContent = des;
+                        dd.appendChild(opt);
+                    }
+                    dd.addEventListener("change", function () {
+                        bindPassengerListener();
+                        price();
+                    });
+                }
+        
+                function bindPassengerListener() {
+                    var tnopInput = document.getElementById("tnop");
+                    tnopInput.removeEventListener("change", price);
+                    tnopInput.addEventListener("change", price);
+                }
+        
+                function price() {
+                    var f = parseInt(document.getElementById("tnop").value );
+                    var z = parseInt(a[ss.value][dd.value]);
+                    var pr = document.getElementById("sp");
+                    pr.innerHTML = "1 Ticket is &#x20B9;" + z;
+                    var sp = document.getElementById("amo");
+                    sp.innerHTML = "";
+                    var td1 = document.createElement("td");
+                    td1.innerHTML = "Total Amount (&#x20B9)<br>(Fixed Price)";
+                    sp.appendChild(td1);
+                    var td2 = document.createElement("td");
+                    var ip = document.createElement("input");
+                    ip.type = "number";
+                    ip.id = "amount";
+                    ip.name = "amount";
+                    ip.readOnly = true;
+                    ip.value = f * z;
+                    td2.appendChild(ip);
+                    sp.appendChild(td2);
+                }
+            });
+        </script>
+        
+        
+        
+    </head>
+<body ng-app = "book" ng-controller = "myctrl">
+    <div id="built"></div>
+    <div id="tt" class="hide">
+        <h3>Train Ticket booking</h3>
+        <h4 id = 'sp'>Update the source and destination </h4>
+        <form onsubmit="tcheck(event)" name = "ttform" id="ttform" ng-model = "ttform" method="post">
+            <table >
+                <tr>
+                    <td>Source Station</td>
+                    <td><select id="sstation" name="sstation" ng-model = "sstation" required></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Destination Station</td>
+                    <td><select id="dstation" name="dstation" ng-model = "dstation" required >
+                    </select>
+                </td>
+                </tr>
+                <tr>
+                    <td>Journey Date</td>
+                    <td><input type="date" id="date" name="date" ng-model = "date" >
+                        <span ng-show="ttform.date.$dirty && ttform.date.$invalid"><br>
+                            <span ng-show="ttform.date.$error.required">Source name is required</span></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>No of Passenger</td>
+                    <td><input type="number" ng-model="tnop" id="tnop" name="tnop"  min="1" required >
+                        <span ng-show="ttform.tnop.$dirty && ttform.tnop.$invalid"><br>
+                            <span ng-show="ttform.tnop.$error.required">No of passenger is required</span></span></td>
+                </tr>
+                <tr id = "amo"></tr>
+                <tr>
+                    <td>Phone number</td>
+                    <td><input type="text" id="phoneno" name="tphoneno" ng-model = "tphoneno" required ng-pattern = '/^[6-9]\d{9}$/'>
+                        <span ng-show="ttform.tphoneno.$dirty && ttform.tphoneno.$invalid"><br>
+                            <span ng-show="ttform.tphoneno.$error.pattern">Phone number is invalid</span><br>
+                            <span ng-show="ttform.tphoneno.$error.required">Phone number is required</span></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Submit</button></td>
+                    <td><button id="treset" type="reset">Reset</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <script src="/project.js"></script>
+    <script src="/project.json"></script>
+    
+</body>
+</html>

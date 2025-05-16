@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="URL/Jquery/jquery.txt"></script>        
+    <link rel="stylesheet" href="URL/css/bootstrap-grid.min.css">
+    <script src="URL/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="project.css">
+</head>
+<body ng-app="myplat" ng-controller="myctrl">
+    <div id="built"></div><br><br>
+    <div id="pt" class="hide" >
+        <h3>Booking Platform Ticket</h3>
+        <h4>1 Ticket is &#8377;10</h4>
+        <form id="ptform" name="ptform" method="post" ng-model="ptform"  onsubmit=" pcheck(event)">
+            <select  name="pn" id="pn" ng-model="pn" required >  </select>
+            <span ng-show="ptform.pn.$dirty && ptform.pn.$invalid">
+            </span><br>
+            <input type="number" name="pnop" ng-model="pnop" id="pnop" required placeholder="No of ticket"  min="1">
+            <span ng-show="ptform.pnop.$dirty && ttform.pnop.$invalid">
+                <span ng-show="ptform.pnop.$error.required">No of passenger is required</span></span>
+        <br>
+            <button  type="submit">Submit</button>
+        </form>
+    </div>
+    <script src="/project.js"></script>
+    <script src="/project.json"></script>
+    <script>
+        $(function(){
+            var xml=new XMLHttpRequest();
+            xml.open("GET","n.txt",true);
+            xml.send();
+            xml.onreadystatechange=function(){
+            if(xml.readyState==4 && xml.status==200){
+                var z=xml.responseText;
+                var a=JSON.parse(z);
+                if (a==1)
+                    $("#built").load("header2.html"); // Before login page
+                else
+                    $("#built").load("header1.html"); // After login page
+            }
+            var f = document.getElementById("pn");
+            var xml2 = new XMLHttpRequest();
+            xml2.open("GET","price.json",true);
+            xml2.send();
+            xml2.onreadystatechange = function(){
+            if(xml2.status == 200 && xml2.readyState == 4){
+                var z = xml2.responseText;
+                var a = JSON.parse(z);
+                var o = document.createElement("option");
+                o.innerHTML = "Station Name";
+                o.disabled = true;
+                o.selected = true;
+                f.append(o);
+                for(src in a){
+                    var op = document.createElement("option");
+                    op.innerHTML = src;
+                    op.id = src;
+                    op.name = src;
+                    f.append(op);
+                }
+            }
+        }}
+    })
+    </script>
+</body>
+</html>
